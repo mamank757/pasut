@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AmCharts 3D Globe - BMKG Tide</title>
+<style>
+#chartdiv {
+  width: 100%;
+  height: 600px;
+  font-size: 0.875rem;
+}
+</style>
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Responsive.js"></script>
+</head>
+<body>
+
+<div id="chartdiv"></div>
+
+<script>
+am5.ready(function() {
+
+var root = am5.Root.new("chartdiv");
+
+root.setThemes([
+  am5themes_Animated.new(root),
+  am5themes_Responsive.new(root)
+]);
+
+var chart = root.container.children.push(am5map.MapChart.new(root, {
+  autoHome: true,
+  panX: "rotateX",
+  panY: "rotateY",
+  maxPanOut: 0,
+  minZoomLevel: 0.5,
+  projection: am5map.geoOrthographic(),
+  
+  // Rotasi awal menghadap Indonesia (Sulawesi)
+  rotationX: -120.39, // Longitude Pelabuhan Bajoe
+  rotationY: 4.34,    // Latitude Pelabuhan Bajoe (-4.34 dinegatifkan)
+  
+  background: am5.Rectangle.new(root, {
+    fill: am5.color(0x101318),
+    fillOpacity: 0
+  })
+}));
+
+var satelliteSeries = chart.series.push(am5map.MapRasterSeries.new(root, {
+  src: "https://cdn.amcharts.com/lib/5/geodata/images/earthDay2048.jpg",
+  nightSrc: "https://cdn.amcharts.com/lib/5/geodata/images/earthNight2048.jpg",
+  sunDate: "now",
+  visible: false
+}));
+
+var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+  geoJSON: am5geodata_worldLow
+}));
+
+polygonSeries.mapPolygons.template.setAll({
+  strokeWidth: 0.5,
+  tooltipText: "{name}"
+});
+
+var credit = chart.children.push(am5.Label.new(root, {
+  text: "Imagery: NASA Earth Observatory",
+  fontSize: 12,
+  fill: am5.color(0xffffff),
+  fillOpacity: 0.6,
+  x: am5.p100,
+  centerX: am5.p100,
+  dx: -10,
+  y: 10,
+  visible: false
+}));
+
+var landTemplate = polygonSeries.mapPolygons.template;
+var landLook = {
+  fillOpacity: landTemplate.get("fillOpacity", 1),
+  stroke: landTemplate.get("stroke", root.interfaceColors.get("background")),
+  strokeOpacity: landTemplate.get("strokeOpacity", 1)
+};
+
+satelliteSeries.on("visible", function (visible) {
+  credit.set("visible", visible);
+  chart.get("background").set("fillOpacity", visible ? 1 : 0);
+  landTemplate.setAll(visible ? { fillOpacity: 0, stroke: am5.color(0xffffff), strokeOpacity: 0.6 } : landLook);
+  graticuleSeries.mapLines.template.set("stroke", visible ? am5.color(0xffffff) : root.interfaceColors.get("alternativeBackground"));
+  timeLabel.set("fill", visible ? am5.color(0xffffff) : root.interfaceColors.get("text"));
+});
+
+var nightSeries = chart.series.push(am5map.NightSeries.new(root, {
+  sunDate: "now"
+}));
+
+nightSeries.mapPolygons.template.setAll({
+  fillOpacity: 0.5
+});
+
+nightSeries.get("sun").setAll({
+  radius: 12,
+  tooltipText: "Matahari tepat di atas sini"
+});
+
+var graticuleSeries = chart.series.push(am5map.GraticuleSeries.new(root, {
+  step: 10
+}));
+
+graticuleSeries.mapLines.template.setAll({
+  stroke: root.interfaceColors.get("alternativeBackground"),
+  strokeOpacity: 0.1
+});
+
+// ==============================================================
+// VISUALISASI PASANG SURUT - PELABUHAN BAJOE
+// ==============================================================
+var tideSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+
+// Konfigurasi bentuk Titik dan Efek Berdenyut (Pulse)
+tideSeries.bullets.push(function() {
+  var container = am5.Container.new(root, {
+    tooltipText: "[bold]{title}[/]\n{tideData}",
+    tooltipY: -10
+  });
+
+  // Lingkaran utama stasiun
+  container.children.push(am5.Circle.new(root, {
+    radius: 5,
+    fill: am5.color(0x00E5FF), // Biru Cyan
+    stroke: am5.color(0xffffff),
+    strokeWidth: 2
+  }));
+
+  // Lingkaran berdenyut di belakangnya
+  var pulse = container.children.push(am5.Circle.new(root, {
+    radius: 5,
+    fill: am5.color(0x00E5FF),
+    opacity: 0.8
+  }));
+
+  // Animasi perbesaran radius
+  pulse.animate({
+    key: "radius",
+    to: 20,
+    duration: 1500,
+    easing: am5.ease.out(am5.ease.cubic),
+    loops: Infinity
+  });
+  
+  // Animasi menghilang (fade out)
+  pulse.animate({
+    key: "opacity",
+    to: 0,
+    duration: 1500,
+    easing: am5.ease.out(am5.ease.cubic),
+    loops: Infinity
+  });
+
+  return am5.Bullet.new(root, {
+    sprite: container
+  });
+});
+
+// Koordinat berdasarkan script Anda: Muara/Pelabuhan Bajoe
+var tideLocation = {
+  geometry: { type: "Point", coordinates: [120.39671, -4.34405] }, // [Longitude, Latitude]
+  title: "Muara Sungai Walanae",
+  tideData: "Mengambil data BMKG..."
+};
+tideSeries.data.push(tideLocation);
+
+// Fungsi utilitas tanggal yyyyMMdd (UTC)
+function getUTCDateString(date) {
+  var yyyy = date.getUTCFullYear();
+  var mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  var dd = String(date.getUTCDate()).padStart(2, '0');
+  return `${yyyy}${mm}${dd}`;
+}
+
+// Ambil data dari BMKG
+// Ambil data dari BMKG via Proxy Google Apps Script Anda
+function fetchTideData() {
+  var now = new Date();
+  var tomorrow = new Date(now.getTime() + (24 * 60 * 60 * 1000));
+  
+  var dari = getUTCDateString(now);
+  var sampai = getUTCDateString(tomorrow);
+
+  // URL Proxy Apps Script Anda yang sudah di-deploy
+  var scriptUrl = "https://script.google.com/macros/s/AKfycbygVdii43PF4cqrz5mn3-er4F_GvT_zwlSMZOQVH3LHWkcydVg3M8E1fdd2d_hDXkuzLw/exec";
+  var apiUrl = `${scriptUrl}?aksi=pasut&dari=${dari}&sampai=${sampai}`;
+
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(data => {
+      // Tangkap jika Apps Script mengembalikan { error: "..." }
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      if (data.high_tides && data.high_tides.length > 0) {
+        // Ambil pasang tertinggi dan surut terendah terdekat
+        var maxTide = Math.max(...data.high_tides.map(t => t.value));
+        var minTide = Math.min(...data.low_tides.map(t => t.value));
+        
+        tideSeries.data.setIndex(0, {
+          geometry: tideLocation.geometry,
+          title: tideLocation.title,
+          tideData: `Pasang Tertinggi (LAT): ${maxTide.toFixed(2)} m\nSurut Terendah (LAT): ${minTide.toFixed(2)} m`
+        });
+      } else {
+        throw new Error("Format data pasut tidak sesuai atau kosong");
+      }
+    })
+    .catch(error => {
+      console.error("Gagal mengambil data pasut:", error);
+      tideSeries.data.setIndex(0, {
+        geometry: tideLocation.geometry,
+        title: tideLocation.title,
+        tideData: "Gagal memuat data dari Apps Script."
+      });
+    });
+}
+
+// Panggil fetch
+fetchTideData();
+// ==============================================================
+
+var zoomControl = chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
+zoomControl.homeButton.set("visible", true);
+
+var timeLabel = chart.children.push(am5.Label.new(root, {
+  x: 20,
+  y: am5.p100,
+  centerY: am5.p100,
+  dy: -15
+}));
+
+var baseTime = new Date().getTime();
+var hours = 0;
+
+function updateDayNight() {
+  var time = baseTime + hours * am5.time.getDuration("hour");
+  var sunDate = hours == 0 ? "now" : time;
+  nightSeries.set("sunDate", sunDate);
+  satelliteSeries.set("sunDate", sunDate);
+  timeLabel.set("text", root.dateFormatter.format(new Date(time), "MMM dd yyyy HH:mm"));
+}
+updateDayNight();
+
+setInterval(function() {
+  baseTime = new Date().getTime();
+  updateDayNight();
+}, 60000);
+
+chart.appear(1000, 100);
+}); 
+</script>
+</body>
+</html>
