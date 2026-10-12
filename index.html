@@ -112,7 +112,6 @@
   th { font-weight: 600; color: var(--ink-soft); background: #f8fafc; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.02em; }
   tbody tr:hover { background: #f1f5f9; }
   td.num, th.num { text-align: right; font-family: var(--mono); }
-  td.skenario, th.skenario { border-left: 1px dashed var(--line); background: rgba(248, 250, 252, 0.4); }
   .table-caption { font-size: 12px; color: var(--ink-soft); padding: 12px 20px 16px; margin: 0; line-height: 1.5; font-style: italic; }
   
   .pill { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; font-family: var(--sans); }
@@ -431,7 +430,6 @@
               <thead><tr>
                 <th>Jarak Hulu</th>
                 <th class="num">Salinitas & Status Saat Ini</th>
-                <th class="num skenario" id="th-skenario">Skenario +15 hr Kering</th>
                 <th class="num tide">Realtime + Pasut (Saat Ini)</th>
               </tr></thead>
               <tbody id="rekap-body"></tbody>
@@ -580,9 +578,7 @@
   function render(){
     autoAdjustHorizon();
 
-    var skenarioHari = window.skenarioKeringHari || 15;
     var qDasar = debitPada(0);
-    var qSk = debitPada(skenarioHari);
     var diBatasQmin = (qDasar <= state.Qmin * 1.001);
 
     var titikPompa = [
@@ -596,22 +592,17 @@
 
     var hasil = titikPompa.map(p => {
       var sal = salinitasPada(0, p.km);
-      var salSk = salinitasPada(skenarioHari, p.km);
-      return Object.assign({}, p, { sal: sal, status: statusOf(sal), salSk: salSk, statusSk: statusOf(salSk) });
+      return Object.assign({}, p, { sal: sal, status: statusOf(sal) });
     });
 
-    document.getElementById("th-skenario").textContent = "Skenario +" + skenarioHari + " hr Kering";
     document.getElementById("table-caption").textContent =
-      "Jarak alur sungai adalah perkiraan topografis. Kolom skenario mensimulasikan salinitas jika " +
-      skenarioHari + " hari ke depan tanpa presipitasi (debit " + qDasar.toFixed(1) + " menjadi " + qSk.toFixed(1) +
-      " m³/s)." +
+      "Jarak alur sungai adalah perkiraan topografis." +
       (diBatasQmin ? " Debit mencapai ambang minimum (Qmin), resesi debit dihentikan." : "");
 
     document.getElementById("rekap-body").innerHTML = hasil.map(p => {
       return `<tr>
                 <td><b style="color:var(--river-deep)">~${p.km} km</b> <span style="font-size:12px; font-weight:500; color:var(--ink-soft); display:block; margin-top:2px;">${p.nama}</span></td>
                 <td class="num">${p.sal.toFixed(2)} ppt <span class="pill ${p.status.cls}" style="margin-left:8px">${p.status.label}</span></td>
-                <td class="num skenario">${p.salSk.toFixed(2)} ppt <span class="pill ${p.statusSk.cls}" style="margin-left:8px">${p.statusSk.label}</span></td>
                 <td class="num tide" data-km="${p.km}">–</td>
               </tr>`;
     }).join("");
@@ -954,7 +945,6 @@
       var ambangT = (typeof data.ambang_t_kritis === "number") ? data.ambang_t_kritis : AMBANG_T_DASAR;
       var skorKering = data.skor_risiko_kering || 0;
       var skorBasah = data.skor_risiko_basah || 0;
-      window.skenarioKeringHari = (typeof data.skenario_kering_hari === "number") ? data.skenario_kering_hari : 15;
       window.kApi = (typeof data.k_api === "number") ? data.k_api : 0.95;
 
       // PANEL IKLIM GLOBAL
