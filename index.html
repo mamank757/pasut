@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Deteksi Salinitas, Banjir & Iklim — Walanae</title>
+<title>Sistem Deteksi Salinitas, Pasang Surut, Banjir & Iklim — Walanae</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -95,7 +95,7 @@
   .status-debug { display: block; font-size: 12px; font-family: var(--mono); margin-top: 6px; color: var(--clay); }
   .text-gagal { color: var(--clay) !important; font-style: italic; }
 
-  /* Grid Hujan & ENSO/IOD */
+  /* Grid Hujan & ENSO */
   .hujan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 16px; }
   .hujan-box { background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.05); padding: 12px; border-radius: 8px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
   .hujan-box span { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; color: var(--ink-soft); }
@@ -226,9 +226,9 @@
 
 <header class="hero">
   <div class="hero-inner">
-    <p class="hero-eyebrow">Smart Farming & Mitigasi Cerdas</p>
-    <h1>Deteksi Salinitas & Banjir</h1>
-    <p class="hero-desc">Sistem pemantauan cerdas baji garam estuari Walanae dan akumulasi curah hujan hulu terintegrasi proyeksi iklim ENSO/IOD.</p>
+    <p class="hero-eyebrow">Mitigasi Cerdas</p>
+    <h1>Deteksi Salinitas, pasang Surut, & Banjir</h1>
+    <p class="hero-desc">Sistem pemantauan cerdas baji garam estuari Walanae dan akumulasi curah hujan hulu terintegrasi proyeksi iklim ENSO.</p>
   </div>
   <svg class="river-wave" viewBox="0 0 1200 48" preserveAspectRatio="none"><path d="M0,24 C150,45 300,3 450,21 C600,39 750,5 900,24 C1050,43 1150,11 1200,21 L1200,48 L0,48 Z"></path></svg>
 </header>
@@ -276,15 +276,13 @@
     <!-- PANEL KANAN: STATUS & HASIL -->
     <div id="results-col">
       
-      <!-- BANNER IKLIM GLOBAL (ENSO + IOD) -->
+      <!-- BANNER IKLIM GLOBAL (ENSO) -->
       <div class="panel status-panel" id="iklim-panel">
         <div class="panel-body">
-          <h2 id="iklim-title" class="status-title">Proyeksi Iklim Global (ENSO & IOD)</h2>
+          <h2 id="iklim-title" class="status-title">Proyeksi Iklim Global (ENSO)</h2>
           <div class="hujan-grid">
             <div class="hujan-box"><span>Fase ENSO</span><strong id="enso-status">-</strong></div>
             <div class="hujan-box"><span>Anomali Niño 3.4</span><strong id="enso-anomali">-</strong></div>
-            <div class="hujan-box"><span>Fase IOD</span><strong id="iod-status">-</strong></div>
-            <div class="hujan-box"><span>DMI Bulanan</span><strong id="iod-dmi">-</strong></div>
           </div>
           <ul id="iklim-lines" class="risk-lines"></ul>
         </div>
@@ -964,17 +962,6 @@
       statusEl.className = (anomaliGagal || ensoStatus === "TIDAK_DIKETAHUI") ? "text-gagal" : "";
       anomaliEl.className = anomaliGagal ? "text-gagal" : "";
 
-      var iodStatus = data.status_iod || "TIDAK_DIKETAHUI";
-      var dmiRaw = data.dmi_iod;
-      var dmiGagal = (dmiRaw === null || dmiRaw === undefined);
-      var dmi = dmiGagal ? null : parseFloat(dmiRaw);
-      var iodEl = document.getElementById("iod-status");
-      var dmiEl = document.getElementById("iod-dmi");
-      iodEl.textContent = (iodStatus === "TIDAK_DIKETAHUI") ? "Tidak Diketahui" : iodStatus;
-      dmiEl.textContent = dmiGagal ? "Data Terkendala" : (dmi > 0 ? "+" : "") + dmi.toFixed(2) + " °C" + (data.dmi_bulan_data ? " (" + data.dmi_bulan_data + ")" : "");
-      iodEl.className = (iodStatus === "TIDAK_DIKETAHUI") ? "text-gagal" : "";
-      dmiEl.className = dmiGagal ? "text-gagal" : "";
-
       var baris = [];
 
       if(ensoStatus === "La Niña"){
@@ -989,18 +976,6 @@
         baris.push(`Suhu Permukaan Laut (SST) zona Niño 3.4 berstatus Netral.`);
       }
 
-      if (iodStatus === "Positif") {
-        iodEl.className = "enso-red";
-        baris.push(`Fase IOD <b>Positif</b>: Subsiden massa udara berpotensi memperpanjang deret hari tanpa presipitasi.`);
-      } else if (iodStatus === "Negatif") {
-        iodEl.className = "enso-blue";
-        baris.push(`Fase IOD <b>Negatif</b>: Konveksi laut memicu ekstra curah hujan pada sistem cuaca lokal.`);
-      } else if (iodStatus === "Netral") {
-        baris.push(`Dipole Mode Index (DMI) dalam ambang Netral untuk analisis operasional bulan ini.`);
-      } else {
-        baris.push(`Sinkronisasi telekoneksi IOD gagal — probabilitas risiko disandarkan pada pola hujan lokal.`);
-      }
-
       if (skorKering > 0) {
         baris.push(`<b>Alert Kekeringan:</b> Ambang toleransi operasional pompa direduksi dari ${AMBANG_T_DASAR} menjadi <b>${ambangT} hari kering</b>.`);
       }
@@ -1012,8 +987,6 @@
 
       if (ensoStatus === "El Niño") panelIklim.classList.add("status-darurat");
       else if (ensoStatus === "La Niña") panelIklim.classList.add("status-banjir-awas");
-      else if (iodStatus === "Positif") panelIklim.classList.add("status-waspada");
-      else if (iodStatus === "Negatif") panelIklim.classList.add("status-banjir-awas");
       else panelIklim.classList.add("status-netral");
 
       // PANEL BANJIR HULU
@@ -1040,7 +1013,7 @@
         document.getElementById("flood-text").innerHTML = `Gagal mengekstrak data satelit CH 30-hari DAS Soppeng & Sidrap. Assessment luapan hidrologis <b>tidak valid</b>.`;
       } else {
         var maxHulu = Math.max(hSidrap === null ? -Infinity : hSidrap, hSoppeng === null ? -Infinity : hSoppeng);
-        var noteDinamis = (siaga < 350) ? `<br><span class="status-caveat">*Kalibrasi ambang batas dikondisikan oleh faktor La Niña / IOD Negatif.</span>` : "";
+        var noteDinamis = (siaga < 350) ? `<br><span class="status-caveat">*Kalibrasi ambang batas dikondisikan oleh faktor La Niña.</span>` : "";
         var noteParsial = (sidrapGagal || soppengGagal) ? `<br><span class="status-caveat">*Hanya subsistem DAS ${sidrapGagal ? "Soppeng" : "Sidrap"} yang berhasil diakuisisi.</span>` : "";
 
         if (maxHulu > siaga) {
@@ -1111,7 +1084,7 @@
       var footNote = `<span class="status-time">Timestamp Sinkronisasi: ${updateTimeStr}</span><span class="status-caveat">Koef. Dispersi (D=${activeD}) diproyeksikan murni dari dinamika pasang laut & angin pesisir.</span>`;
       if (data.fase_pasang) footNote += `<span class="status-caveat">Indikator Bulan: ${escapeHtml(data.fase_pasang)}.</span>`;
       if (ambangT < AMBANG_T_DASAR) footNote += `<span class="status-caveat">*Reduksi threshold t ke ${ambangT} hr merupakan safety factor iklim.</span>`;
-      if (Array.isArray(data.peringatan)) data.peringatan.forEach(function(p){ footNote += `<span class="status-caveat">⚠️ ${escapeHtml(p)}</span>`; });
+      if (Array.isArray(data.peringatan)) data.peringatan.filter(function(p){ return !/\bIOD\b|\bDMI\b/i.test(String(p)); }).forEach(function(p){ footNote += `<span class="status-caveat">⚠️ ${escapeHtml(p)}</span>`; });
 
       window.customActiveD = activeD;
 
