@@ -123,7 +123,9 @@
   td.tide { background: #f0f9ff; border-left: 1px dashed var(--line); }
   th.tide { background: #e0f2fe; color: #0369a1; border-left: 1px dashed var(--line); }
   .tide-delta { display: block; font: 500 11px var(--mono); color: var(--ink-soft); margin-top: 4px; text-align: right; }
-
+  .tide-win { display: block; font: 500 11px var(--mono); color: #0369a1; margin-top: 2px; text-align: right; }
+  .tide-ctrl { padding: 0 20px 16px; display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-soft); }
+  .tide-ctrl input { width: 70px; font-family: var(--mono); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; margin-left: 6px; }
   /* GLOBE (baru) */
   #chartdiv { width: 100%; height: 560px; font-size: 0.875rem; }
 
@@ -428,13 +430,17 @@
               <thead><tr>
                 <th>Jarak Hulu</th>
                 <th class="num">Salinitas Harian Saat Ini</th>
-                <th class="num tide">Realtime + Pasut (Saat Ini)</th>
+                <th class="num tide">Realtime + Pasut (dengan lag)</th>
               </tr></thead>
               <tbody id="rekap-body"></tbody>
             </table>
           </div>
           <p class="table-caption" id="table-caption">Jarak alur sungai merupakan aproksimasi topografis.</p>
           <p class="table-caption" id="tide-note" style="padding-top:0"></p>
+                  <div class="tide-ctrl">
+            <label>Celerity pasut C (m/s)<input type="number" id="in-cpasut" value="6" min="1" max="12" step="0.5"></label>
+            <label>Lag tambahan salinitas (jam)<input type="number" id="in-lagsal" value="1" min="0" max="4" step="0.25"></label>
+          </div>
         </div>
       </div>
 
@@ -541,36 +547,112 @@
     }
   }
 
-  // ---- KOLOM SALINITAS REALTIME + PASUT (baru) ----
-  var E_PASUT_KM = 5; // asumsi eksursi baji garam maksimum akibat pasut (km) — tentatif, kalibrasi dengan data lapangan
+    // ---- KOLOM SALINITAS REALTIME + PASUT DENGAN LAG ----
+  var E_PASUT_KM = 5; // eksursi baji garam maksimum akibat pasut (km) — tentatif
+  window.PASUT_LAG = window.PASUT_LAG || { C: 6, extraSalJam: 1 }; // tentatif, kalibrasi dengan logger
+
+  function jamLokal(ms, off){
+    var d = new Date(ms + off * 3600000);
+    return ("0" + d.getUTCHours()).slice(-2) + ":" + ("0" + d.getUTCMinutes()).slice(-2);
+  }
+  function durTeks(ms){
+    var m = Math.round(ms / 60000);
+    return m >= 60 ? Math.floor(m / 60) + " j " + (m % 60) + " m" : m + " m";
+  }
+
+  // Salinitas di km tertentu pada waktu tMuara (waktu di muara), memakai muka air muara pada (tMuara - lagSal).
+  function salPasutPada(km, tMuara, info, lagSalMs){
+    var h = window.pasutLevelAt(tMuara - lagSalMs);
+    var amp = Math.max(0.3, info.thr - info.mid);
+    var f = Math.max(-1.5, Math.min(1.5, (h - info.mid) / amp));
+    var shift = E_PASUT_KM * f; // + = baji garam terdorong ke hulu
+    return { s: Math.min(state.S0, salinitasPada(0, Math.max(0, km - shift))), shift: shift, h: h };
+  }
+
+  // Cari jendela salinitas terendah dalam 30 jam ke depan (langkah 10 menit).
+  function cariJendela(km, info, lagSalMs){
+    var STEP = 10 * 60000, N = Math.round(30 * 3600000 / STEP), t0 = info.now;
+    var ts = [], ss = [], mn = Infinity, mx = -Infinity, i;
+    for (i = 0; i <= N; i++){
+      var t = t0 + i * STEP, s = salPasutPada(km, t, info, lagSalMs).s;
+      ts.push(t); ss.push(s);
+      if (s < mn) mn = s;
+      if (s > mx) mx = s;
+    }
+    var range = mx - mn;
+    if (range < 0.05) return { flat: true, range: range, sMin: mn };
+    var batas = mn + 0.15 * range, a = -1, b = -1;
+    for (i = 0; i <= N; i++){
+      if (ss[i] <= batas){ if (a < 0) a = i; b = i; }
+      else if (a >= 0) break;
+    }
+    if (a < 0) return null;
+    var im = a;
+    for (i = a; i <= b; i++) if (ss[i] < ss[im]) im = i;
+    return { a: ts[a], b: ts[b], tMin: ts[im], sMin: ss[im], ongoing: (a === 0), range: range, flat: false };
+  }
+
   function updateTideCells(){
     var cells = document.querySelectorAll("td.tide[data-km]");
     if (!cells.length) return;
-    var info = (typeof window.pasutRealtime === "function") ? window.pasutRealtime() : null;
+    var info = (typeof window.pasutRealtime === "function") ? window.pasutRealtime(0) : null;
     var note = document.getElementById("tide-note");
-    if (!info){
+    if (!info || typeof window.pasutLag !== "function" || typeof window.pasutLevelAt !== "function"){
       cells.forEach(function(c){ c.innerHTML = '<span style="color:var(--ink-soft)">menunggu data pasut…</span>'; });
       if (note) note.textContent = "Kolom realtime menunggu data pasang surut BMKG.";
       return;
     }
-    var amp = Math.max(0.3, info.thr - info.mid);
-    var f = Math.max(-1.5, Math.min(1.5, (info.h - info.mid) / amp));
-    var shift = E_PASUT_KM * f; // + = baji garam terdorong ke hulu
-    var arah = info.rate > 0.02 ? "▲ naik" : (info.rate < -0.02 ? "▼ surut" : "■ diam");
+    info.now = info.t; // lag = 0 -> waktu sekarang
+    var zona = info.off === 8 ? "WITA" : "UTC";
+
     cells.forEach(function(c){
       var km = parseFloat(c.getAttribute("data-km"));
+      var lag = window.pasutLag(km);
+      var cur = salPasutPada(km, info.now, info, lag.sal);
       var base = salinitasPada(0, km);
-      var s = Math.min(state.S0, salinitasPada(0, Math.max(0, km - shift)));
-      var st = statusOf(s), d = s - base;
-      c.innerHTML = s.toFixed(2) + ' ppt <span class="pill ' + st.cls + '" style="margin-left:8px">' + st.label + '</span>' +
-        '<small class="tide-delta">' + (d >= 0 ? "+" : "") + d.toFixed(2) + ' ppt vs rata-rata · ' + arah + '</small>';
+      var st = statusOf(cur.s), d = cur.s - base;
+
+      var tl = info.now - lag.sal;
+      var rate = (window.pasutLevelAt(tl + 300000) - window.pasutLevelAt(tl - 300000)) / (10 / 60);
+      var arah = rate > 0.02 ? "▲ naik" : (rate < -0.02 ? "▼ surut" : "■ diam");
+
+      var w = cariJendela(km, info, lag.sal), winTxt = "";
+      if (w && w.flat){
+        winTxt = '<small class="tide-win">variasi pasut &lt; 0.05 ppt (tidak ada jendela khusus)</small>';
+      } else if (w){
+        winTxt = '<small class="tide-win">' +
+          (w.ongoing ? "jendela terendah berlangsung s.d. ±" + jamLokal(w.b, info.off)
+                     : "jendela terendah ±" + jamLokal(w.a, info.off) + "–" + jamLokal(w.b, info.off)) +
+          " " + zona + '</small>' +
+          '<small class="tide-win">min ' + w.sMin.toFixed(2) + ' ppt ±' + jamLokal(w.tMin, info.off) + " " + zona +
+          (w.sMin < 1.3 ? " (aman)" : "") + '</small>';
+      }
+
+      c.innerHTML = cur.s.toFixed(2) + ' ppt <span class="pill ' + st.cls + '" style="margin-left:8px">' + st.label + '</span>' +
+        '<small class="tide-delta">' + (d >= 0 ? "+" : "") + d.toFixed(2) + ' ppt vs rata-rata · ' + arah + '</small>' +
+        '<small class="tide-delta">lag muka air ' + durTeks(lag.muka) + ' · lag salinitas ' + durTeks(lag.sal) + '</small>' +
+        winTxt;
     });
-    var dt = new Date(info.t + info.off * 3600000);
-    var jam = ("0" + dt.getUTCHours()).slice(-2) + ":" + ("0" + dt.getUTCMinutes()).slice(-2);
-    if (note) note.textContent = "Kolom realtime" + (info.demo ? " (DEMO)" : "") + ": muka air " + info.h.toFixed(2) +
-      " m LAT pukul " + jam + (info.off === 8 ? " WITA" : " UTC") + " (" + arah + "). Baji garam bergeser " +
-      Math.abs(shift).toFixed(1) + " km ke " + (shift >= 0 ? "hulu" : "hilir") +
-      " dari posisi rata-rata (model tentatif: pergeseran ∝ (muka air − tengah pasut)/amplitudo, eksursi maks " + E_PASUT_KM + " km).";
+
+    if (note) note.textContent = "Kolom realtime" + (info.demo ? " (DEMO)" : "") +
+      ": muka air muara " + info.h.toFixed(2) + " m LAT pukul " + jamLokal(info.now, info.off) + " " + zona +
+      ". Setiap titik memakai muka air muara yang sudah ditunda (lag muka air = jarak / C, C = " + window.PASUT_LAG.C +
+      " m/s, ditambah " + window.PASUT_LAG.extraSalJam + " jam respons salinitas). Pergeseran baji garam ∝ (muka air − tengah pasut)/amplitudo, " +
+      "eksursi maks " + E_PASUT_KM + " km. Seluruh parameter lag TENTATIF, belum dikalibrasi dengan logger lapangan. " +
+      "Jendela terendah = 15% terbawah rentang variasi salinitas estimasi dalam 30 jam ke depan.";
+  }
+
+  function pasangKontrolLag(){
+    var c = document.getElementById("in-cpasut"), l = document.getElementById("in-lagsal");
+    if (!c || !l) return;
+    function baca(){
+      var cv = parseFloat(c.value), lv = parseFloat(l.value);
+      if (!isNaN(cv) && cv > 0) window.PASUT_LAG.C = cv;
+      if (!isNaN(lv) && lv >= 0) window.PASUT_LAG.extraSalJam = lv;
+      updateTideCells();
+    }
+    c.addEventListener("input", baca);
+    l.addEventListener("input", baca);
   }
 
   function render(){
@@ -1133,10 +1215,11 @@
   }
 
   document.getElementById("btn-sync").addEventListener("click", syncData);
-  window.addEventListener("pasut-tick", updateTideCells);
+    window.addEventListener("pasut-tick", updateTideCells);
   initRiverMap();
   bangunLegenda();
   pasangPembacaGrafik();
+  pasangKontrolLag();      // <-- baru
   onChange();
   syncData();
   
@@ -1434,10 +1517,11 @@
     txt+="Ambang darurat "+S.thr.toFixed(2)+" m bersifat tentatif dan mengikuti pengaturan dashboard.";
     $("pv-src").textContent=txt;
 
-    buildGauge();
+        buildGauge();
     renderChart();
     renderOver();
     draw();
+    window.dispatchEvent(new Event('pasut-tick'));   // <-- baris baru
   }
 
   function setChip(cls,text){ var c=$("pv-chip"); c.className="pv-chip"+(cls?" "+cls:""); c.textContent=text; }
@@ -1722,10 +1806,17 @@
     requestAnimationFrame(loop);
   }
 
-  // API untuk kolom "Realtime + Pasut" pada tabel salinitas (selalu memakai waktu nyata, bukan waktu animasi)
-  window.pasutRealtime=function(){
+    // API untuk kolom "Realtime + Pasut": selalu waktu nyata, kini dengan parameter lag (ms).
+  // Lag muka air = jarak / C; lag salinitas = lag muka air + lag tambahan (PASUT_LAG diatur di dashboard).
+  window.pasutLag = function(km){
+    var cfg = window.PASUT_LAG || { C: 6, extraSalJam: 1 };
+    var muka = km * 1000 / Math.max(0.5, cfg.C) * 1000;   // ms
+    return { muka: muka, sal: muka + cfg.extraSalJam * HR };
+  };
+  window.pasutLevelAt = function(t){ return S.P.length ? levelAt(t) : null; };
+  window.pasutRealtime = function(lagMs){
     if(!S.P.length) return null;
-    var t=nowRef();
+    var t = nowRef() - (lagMs || 0);
     return { h:levelAt(t), rate:(levelAt(t+300000)-levelAt(t-300000))/(10/60), mid:S.mid, thr:S.thr, demo:S.demo, t:t, off:S.off };
   };
 
