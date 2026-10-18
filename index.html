@@ -14,31 +14,31 @@
     --ink: #1e293b; 
     --ink-soft: #64748b; 
     --line: #e2e8f0;
-    
+
     --river-deep: #0f172a; 
     --river: #0284c7; 
-    
+
     --paddy: #16a34a; --paddy-bg: #dcfce7;  
     --amber: #d97706; --amber-bg: #fef3c7;  
     --clay: #dc2626; --clay-bg: #fee2e2;
     --flood: #2563eb; --flood-bg: #dbeafe;
-    
+
     --radius: 12px; 
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    
+
     --sans: 'Inter', system-ui, -apple-system, sans-serif; 
     --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
-  
+
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.6; }
-  
+
   /* Hero Section */
   header.hero { background: linear-gradient(135deg, var(--river-deep), #1e3a8a); color: #f8fafc; padding: 40px 20px 0; position: relative; overflow: hidden; }
   .hero-inner { max-width: 1120px; margin: 0 auto; padding-bottom: 32px; position: relative; z-index: 2; }
   .hero-eyebrow { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: #7dd3fc; margin: 0 0 12px; text-transform: uppercase; }
-  h1 { font-weight: 700; font-size: clamp(28px, 4vw, 42px); line-height: 1.2; margin: 0 0 12px; letter-spacing: -0.02em; }
+  h1 { font-weight: 700; font-size: clamp(24px, 4vw, 42px); line-height: 1.2; margin: 0 0 12px; letter-spacing: -0.02em; }
   .hero-desc { max-width: 650px; color: #bae6fd; font-size: 15px; margin: 0; line-height: 1.6; }
   .river-wave { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 48px; display: block; }
   .river-wave path { fill: var(--bg); }
@@ -61,17 +61,17 @@
   .field-label { font-size: 13.5px; font-weight: 500; color: var(--ink); }
   .field-value { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--river); background: #e0f2fe; padding: 2px 8px; border-radius: 6px; }
   .field-row { display: flex; align-items: center; gap: 12px; }
-  
+
   input[type="range"] { flex: 1; -webkit-appearance: none; height: 6px; background: #cbd5e1; border-radius: 4px; outline: none; }
-  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--river); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.1s; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--river); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.1s; }
   input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   input[type="number"] { width: 76px; font-family: var(--mono); font-size: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: #fff; text-align: center; transition: border-color 0.2s; }
   input[type="number"]:focus { border-color: var(--river); outline: none; box-shadow: 0 0 0 3px var(--flood-bg); }
-  
+
   .field.primary { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin: 0 0 20px; }
   .field.primary .field-value { background: #dcfce7; color: #166534; }
   .field.primary input[type="range"]::-webkit-slider-thumb { background: #16a34a; }
-  
+
   .field-note { font-size: 12px; color: var(--ink-soft); margin: 8px 0 0; line-height: 1.5; }
   .section-sep { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin: 24px 0 12px; padding-top: 16px; border-top: 1px dashed var(--line); }
 
@@ -87,7 +87,7 @@
   .status-aman { background: var(--paddy-bg); border-color: #bbf7d0; border-left-color: var(--paddy); color: #166534; }
   .status-banjir-awas { background: var(--flood-bg); border-color: #bfdbfe; border-left-color: var(--flood); color: #1e40af; }
   .status-netral { background: #f8fafc; border-color: var(--line); border-left-color: #94a3b8; color: #334155; }
-  
+
   .status-title { font-size: 14px; font-weight: 700; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
   .status-text { margin: 0; font-size: 14px; line-height: 1.6; }
   .status-time { display: block; font-size: 12px; font-family: var(--mono); margin-top: 10px; font-weight: 500; opacity: 0.8; }
@@ -113,20 +113,20 @@
   tbody tr:hover { background: #f1f5f9; }
   td.num, th.num { text-align: right; font-family: var(--mono); }
   .table-caption { font-size: 12px; color: var(--ink-soft); padding: 12px 20px 16px; margin: 0; line-height: 1.5; font-style: italic; }
-  
+
   .pill { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; font-family: var(--sans); }
   .pill.aman { background: var(--paddy-bg); color: var(--paddy); }
   .pill.turun { background: var(--amber-bg); color: var(--amber); }
   .pill.gagal { background: var(--clay-bg); color: var(--clay); }
 
-  /* KOLOM REALTIME + PASUT (baru) */
+  /* KOLOM REALTIME + PASUT */
   td.tide { background: #f0f9ff; border-left: 1px dashed var(--line); }
   th.tide { background: #e0f2fe; color: #0369a1; border-left: 1px dashed var(--line); }
   .tide-delta { display: block; font: 500 11px var(--mono); color: var(--ink-soft); margin-top: 4px; text-align: right; }
   .tide-win { display: block; font: 500 11px var(--mono); color: #0369a1; margin-top: 2px; text-align: right; }
   .tide-ctrl { padding: 0 20px 16px; display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-soft); }
-  .tide-ctrl input { width: 70px; font-family: var(--mono); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; margin-left: 6px; }
-    .table-scroll table { min-width: 760px; }
+  .tide-ctrl input { width: 70px; font-family: var(--mono); border: 1px solid var(--line); border-radius: 6px; padding: 6px; margin-left: 6px; }
+  .table-scroll table { min-width: 760px; }
   #rekap-body td { vertical-align: top; padding: 12px 14px; }
   #rekap-body td.num, table th.num { text-align: left; }
   #rekap-body tr:nth-child(even) { background: #fafcff; }
@@ -135,10 +135,15 @@
   .arah.up { color: #0369a1; font-weight: 700; }
   .arah.down { color: #15803d; font-weight: 700; }
   .muted { color: var(--ink-soft); font-size: 12px; }
-  #wl-panel svg { display: block; width: 100%; height: auto; }
+  
+  /* SVG Charts Scroll Fix for Mobile */
+  #wl-gauges, #wl-chart { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
+  #wl-gauges svg, #wl-chart svg { min-width: 650px; display: block; height: auto; }
+  
   .wl-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 12px; font-weight: 500; color: var(--ink-soft); }
   .wl-legend i { display: inline-block; width: 12px; height: 3px; margin-right: 6px; vertical-align: 3px; border-radius: 2px; }
-  /* GLOBE (baru) */
+  
+  /* GLOBE */
   #chartdiv { width: 100%; height: 560px; font-size: 0.875rem; }
 
   /* LEAFLET KUSTOMISASI */
@@ -152,21 +157,14 @@
   .chart-controls select { font-family: var(--mono); font-size: 14px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; background: #fff; color: var(--ink); font-weight: 500; cursor: pointer; outline: none; }
   .chart-controls select:focus { border-color: var(--river); }
   .chart-wrap { position: relative; width: 100%; border: 1px solid var(--line); border-radius: 8px; background: #fafafa; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-  .chart-wrap canvas { display: block; width: 100%; touch-action: none; cursor: crosshair; } /* touch-action: none agar scroll tidak ganggu saat inspeksi grafik */
-  
+  .chart-wrap canvas { display: block; width: 100%; touch-action: pan-y; cursor: crosshair; } 
+
   /* KURSOR INSPEKSI */
   .chart-cursor { 
-    display: none; 
-    position: absolute; 
-    width: 14px; 
-    height: 14px; 
-    border: 2.5px solid #0f172a; 
-    border-radius: 50%; 
-    background: #ffffff; 
+    display: none; position: absolute; width: 14px; height: 14px; 
+    border: 2.5px solid #0f172a; border-radius: 50%; background: #ffffff; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.7); 
-    pointer-events: none; 
-    transform: translate(-50%, -50%); 
-    z-index: 10;
+    pointer-events: none; transform: translate(-50%, -50%); z-index: 10;
   }
 
   .chart-readout { font-family: var(--mono); font-size: 12.5px; font-weight: 500; color: var(--river-deep); background: #e0f2fe; padding: 12px; border-radius: 6px; min-height: 40px; margin: 16px 0 0; display: flex; align-items: center; border: 1px solid #bae6fd; }
@@ -218,14 +216,49 @@
   @keyframes pvw1{from{transform:translateX(0)}to{transform:translateX(-150px)}}
   @keyframes pvw2{from{transform:translateX(-200px)}to{transform:translateX(0)}}
   @media (prefers-reduced-motion:reduce){#pasut-viz .pv-w1,#pasut-viz .pv-w2{animation:none}}
-  /* === akhir PASANG SURUT === */
 
+  /* =========================================================
+     OPTIMASI TAMPILAN SMARTPHONE (MOBILE RESPONSIVE FIXES)
+     ========================================================= */
   @media (max-width: 480px) {
-    header.hero { padding: 32px 16px 0; }
+    header.hero { padding: 24px 16px 0; }
+    h1 { font-size: 24px; }
+    .hero-desc { font-size: 13.5px; }
+    
     main { padding: 16px 12px 40px; }
-    .panel-head { padding: 14px 16px; }
-    .panel-body { padding: 16px; }
-    input[type="number"] { width: 68px; font-size: 14px; }
+    .layout { gap: 16px; }
+    
+    .panel-head { padding: 12px 14px; }
+    .panel-body { padding: 14px; }
+    .panel + .panel { margin-top: 16px; }
+
+    /* Fix Form/Input supaya mudah di-tap dengan jempol */
+    input[type="number"] { width: 70px; font-size: 14px; height: 38px; }
+    input[type="range"]::-webkit-slider-thumb { width: 26px; height: 26px; } 
+    .btn-sync { padding: 12px; font-size: 13.5px; }
+
+    /* Tide Control Wrapper -> jadi grid rapi */
+    #pasut-viz .pv-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #pasut-viz .pv-bar > .pv-chip { grid-column: 1 / -1; justify-content: center; display: flex; text-align: center; }
+    #pasut-viz .pv-bar > .pv-spacer { display: none; }
+    #pasut-viz .pv-bar button, #pasut-viz .pv-bar select { width: 100%; margin: 0; padding: 10px 8px; font-size: 12.5px; }
+    #pasut-viz .pv-bar #pv-reload { grid-column: 1 / -1; }
+
+    /* Control Tabel Pasut */
+    .tide-ctrl { flex-direction: column; align-items: stretch; gap: 10px; padding: 0 10px 14px; }
+    .tide-ctrl label { display: flex; justify-content: space-between; width: 100%; align-items: center; }
+
+    /* Tinggi Peta & Globe diturunkan agar tidak nyangkut saat scroll di HP */
+    #chartdiv { height: 350px !important; }
+    #leaflet-map { height: 300px !important; }
+
+    /* Tabel Padding */
+    th, td { padding: 10px 10px; font-size: 12.5px; }
+    .table-caption { padding: 8px 10px 12px; }
+    #rekap-body td { padding: 10px 10px; }
+    
+    /* Grapik Card Pasut (Hujan/Pasang) */
+    .hujan-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -253,7 +286,7 @@
     <div class="panel">
       <div class="panel-head"><h2>Parameter Model</h2></div>
       <div class="panel-body">
-        
+
         <button id="btn-sync" class="btn-sync">Menarik Data IoT & Satelit...</button>
 
         <div class="field primary" id="field-t">
@@ -289,7 +322,7 @@
 
     <!-- PANEL KANAN: STATUS & HASIL -->
     <div id="results-col">
-      
+
       <!-- BANNER IKLIM GLOBAL (ENSO) -->
       <div class="panel status-panel" id="iklim-panel">
         <div class="panel-body">
@@ -426,7 +459,7 @@
             <canvas id="hov-canvas" height="300"></canvas>
             <div id="chart-cursor" class="chart-cursor"></div>
           </div>
-          
+
           <div class="chart-readout" id="hov-readout">💡 Arahkan kursor atau sentuh grafik untuk membaca nilai pasti di area tersebut.</div>
           <div class="chart-legend" id="hov-legend"></div>
           <p class="field-note" id="hov-caption" style="margin-top: 16px;"></p>
@@ -448,7 +481,7 @@
         <div class="panel-body" style="padding: 0;">
           <div class="table-scroll">
             <table>
-                            <thead><tr>
+              <thead><tr>
                 <th>Titik Pompa</th>
                 <th class="num">Rata-rata Harian</th>
                 <th class="num tide">Realtime + Pasut</th>
@@ -460,10 +493,10 @@
           </div>
           <p class="table-caption" id="table-caption">Jarak alur sungai merupakan aproksimasi topografis.</p>
           <p class="table-caption" id="tide-note" style="padding-top:0"></p>
-                  <div class="tide-ctrl">
+          <div class="tide-ctrl">
             <label>Celerity pasut C (m/s)<input type="number" id="in-cpasut" value="6" min="1" max="12" step="0.5"></label>
             <label>Lag tambahan salinitas (jam)<input type="number" id="in-lagsal" value="1" min="0" max="4" step="0.25"></label>
-                        <label>Redaman amplitudo per 10 km (%)<input type="number" id="in-redam" value="5" min="0" max="30" step="1"></label>
+            <label>Redaman amplitudo per 10 km (%)<input type="number" id="in-redam" value="5" min="0" max="30" step="1"></label>
           </div>
         </div>
       </div>
@@ -541,13 +574,13 @@
     var k = 90 / Math.log(state.Qavg / state.Qmin);
     return Math.max(state.Qmin, state.Qavg * Math.exp(-hth_absolut / k));
   }
-  
+
   function salinitasAbsolut(hth_absolut, km){
     var uf = debitAbsolut(hth_absolut) / (state.w * state.d);
     var currentD = window.customActiveD || 100;
     return state.S0 * Math.exp(-(uf / currentD) * km * 1000);
   }
-  
+
   function jarakIsohalinAbsolut(hth_absolut, ambang){
     if (ambang >= state.S0) return null;
     var uf = debitAbsolut(hth_absolut) / (state.w * state.d);
@@ -774,7 +807,7 @@
       "Jarak alur sungai adalah perkiraan topografis." +
       (diBatasQmin ? " Debit mencapai ambang minimum (Qmin), resesi debit dihentikan." : "");
 
-       document.getElementById("rekap-body").innerHTML = hasil.map(p => {
+        document.getElementById("rekap-body").innerHTML = hasil.map(p => {
       return `<tr data-km="${p.km}">
                 <td><b style="color:var(--river-deep)">${p.nama}</b><div class="ts">~${p.km} km dari muara</div></td>
                 <td class="num"><div class="tm">${p.sal.toFixed(2)} ppt <span class="pill ${p.status.cls}">${p.status.label}</span></div></td>
@@ -807,7 +840,7 @@
   function bangunLegenda(){
     var el = document.getElementById("hov-legend");
     if (!el) return;
-    
+
     var item = [
       ["&lt; 1.3 ppt (Aman)", "#dcfce7"],
       ["1.3 – 5 ppt (Turun Hasil)", "#fef08a"],
@@ -815,7 +848,7 @@
       ["10 – 15 ppt", "#fca5a5"],
       ["&gt; 15 ppt (Kritis)", "#b91c1c"]
     ];
-    
+
     el.innerHTML = item.map(function(it){
       return '<span style="display:inline-flex; align-items:center;"><span class="sw" style="background:' + it[1] + '"></span>' + it[0] + '</span>';
     }).join("") +
@@ -828,7 +861,7 @@
     if (!cv || !cv.getContext) return;
     var cssW = cv.parentNode.clientWidth;
     if (!cssW) return;
-    
+
     var H = parseInt(document.getElementById("hov-horizon").value, 10) || 120;
     var cssH = Math.max(300, Math.min(450, Math.round(cssW * 0.6)));
     var dpr = window.devicePixelRatio || 1;
@@ -842,7 +875,7 @@
     var pw = cssW - pad.l - pad.r, ph = cssH - pad.t - pad.b;
     var baris = H + 1;                       
     var ch = ph / baris;
-    
+
     var nx = Math.round(pw / 1.5); 
     var cw = pw / nx;
     function yHari(h){ return pad.t + ph - (h + 0.5) * ch; }   
@@ -859,7 +892,7 @@
 
     ctx.save();
     ctx.beginPath(); ctx.rect(pad.l, pad.t, pw, ph); ctx.clip();
-    
+
     // 2. Garis Grid Background
     ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
     ctx.lineWidth = 1;
@@ -884,12 +917,12 @@
       ctx.setLineDash(g[2]); ctx.strokeStyle = g[1]; ctx.lineWidth = 2.5; ctx.stroke();
     });
     ctx.setLineDash([]);
-    
+
     // 4. GARIS PENANDA "KONDISI SAAT INI"
     var currT = state.t;
     if(currT >= 0 && currT <= H) {
       var yCurr = yHari(currT);
-      
+
       ctx.beginPath();
       ctx.moveTo(pad.l, yCurr);
       ctx.lineTo(pad.l + pw, yCurr);
@@ -897,7 +930,7 @@
       ctx.strokeStyle = "rgba(0,0,0,0.6)";
       ctx.lineWidth = 2.5;
       ctx.stroke();
-      
+
       ctx.beginPath();
       ctx.moveTo(pad.l, yCurr);
       ctx.lineTo(pad.l + pw, yCurr);
@@ -905,7 +938,7 @@
       ctx.lineWidth = 1.5;
       ctx.stroke();
       ctx.setLineDash([]);
-      
+
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 11px Inter, sans-serif";
       ctx.textAlign = "left";
@@ -915,7 +948,7 @@
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 1;
       ctx.fillText("◀ POSISI AKTUAL SAAT INI (HTH " + Math.round(currT) + ")", pad.l + 8, yCurr - 4);
-      
+
       ctx.shadowBlur = 0;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
@@ -937,7 +970,7 @@
     ctx.fillStyle = "#475569";
     ctx.font = "12px ui-monospace, monospace";
     ctx.textAlign = "center"; ctx.textBaseline = "top";
-    
+
     for (var km = 0; km <= HOV_KM_MAX; km += 5){
       var tx = xKm(km);
       ctx.beginPath(); ctx.moveTo(tx, pad.t + ph); ctx.lineTo(tx, pad.t + ph + 5); ctx.stroke();
@@ -945,13 +978,13 @@
     }
     ctx.font = "600 12.5px Inter, sans-serif";
     ctx.fillText("Jarak dari Muara (km)", pad.l + pw / 2, pad.t + ph + 26);
-    
+
     if (cssW >= 560){
       ctx.textBaseline = "bottom"; ctx.font = "600 11.5px Inter, sans-serif";
       POMPA_GRAFIK.forEach(function(p){ ctx.fillText(p.nama, xKm(p.km), pad.t - 8); });
       ctx.font = "12px ui-monospace, monospace";
     }
-    
+
     ctx.textAlign = "right"; ctx.textBaseline = "middle";
     for (var hh = 0; hh <= H; hh += langkahHari){
       var ty = yHari(hh);
@@ -973,33 +1006,33 @@
     var cv = document.getElementById("hov-canvas");
     var out = document.getElementById("hov-readout");
     var cursor = document.getElementById("chart-cursor"); // Elemen kursor
-    
+
     if (!cv || !out || !cursor) return;
-    
+
     function baca(ev){
       if (!hovLayout) return;
       var rect = cv.getBoundingClientRect();
       var p = (ev.touches && ev.touches[0]) ? ev.touches[0] : ev;
       var x = p.clientX - rect.left, y = p.clientY - rect.top;
       var L = hovLayout;
-      
+
       // Sembunyikan kursor jika keluar dari area plotting (padding)
       if (x < L.pad.l || x > L.pad.l + L.pw || y < L.pad.t || y > L.pad.t + L.ph) {
         cursor.style.display = "none";
         return;
       }
-      
+
       var km = (x - L.pad.l) / L.pw * HOV_KM_MAX;
       var hari = Math.min(L.H, Math.max(0, Math.floor((L.pad.t + L.ph - y) / L.ch)));
       var s = salinitasAbsolut(hari, km); 
       var stat = statusOf(s);
-      
+
       // Tampilkan & pindahkan posisi kursor visual
       cursor.style.display = "block";
       cursor.style.left = x + "px";
       cursor.style.top = y + "px";
       cursor.style.background = warnaSalinitas(s); // Background menyesuaikan tingkat salinitas
-      
+
       // Layout flexbox agar rapi dan tidak bocor/overlap di HP
       out.innerHTML = `
         <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; width:100%;">
@@ -1009,15 +1042,15 @@
           <span style="font-family:var(--sans); font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:12px; background:${warnaSalinitas(s)}; border: 1px solid rgba(0,0,0,0.1); color: ${s>15 ? '#fff' : 'var(--ink)'}">${stat.label}</span>
         </div>`;
     }
-    
+
     cv.addEventListener("mousemove", baca);
     cv.addEventListener("touchstart", baca, { passive: true });
     cv.addEventListener("touchmove", baca, { passive: true });
-    
+
     // Hilangkan kursor saat mouse/jari diangkat atau keluar kanvas
     cv.addEventListener("mouseleave", function(){ cursor.style.display = "none"; });
     cv.addEventListener("touchend", function(){ cursor.style.display = "none"; });
-    
+
     document.getElementById("hov-horizon").addEventListener("change", gambarGrafik);
     var tunda = null;
     window.addEventListener("resize", function(){
@@ -1047,7 +1080,7 @@
     });
 
     var bounds = [[MUARA.lat, MUARA.lon]];
-    
+
     [
       { id: "cenrana", nama: "Cenrana", lat: -4.32276555380242, lon: 120.3133628191657 },
       { id: "kampoti", nama: "Kampoti", lat: -4.290858635455382, lon: 120.29324711963528 },
@@ -1109,7 +1142,7 @@
     var btn = document.getElementById("btn-sync");
     btn.textContent = "Sinkronisasi Telemetri IoT & Data Satelit...";
     btn.disabled = true;
-    
+
     try {
       var res = await fetch(URL_GAS);
       var data = await res.json();
@@ -1161,7 +1194,7 @@
       if (skorBasah > 0) {
         baris.push(`<b>Alert Luapan Sungai:</b> Threshold kewaspadaan hulu diturunkan otomatis (Waspada: <b>${waspada} mm</b> | Siaga: <b>${siaga} mm</b>).`);
       }
-      
+
       document.getElementById("iklim-lines").innerHTML = baris.map(function(b){ return "<li>" + b + "</li>"; }).join("");
 
       if (ensoStatus === "El Niño") panelIklim.classList.add("status-darurat");
@@ -1248,18 +1281,18 @@
         detailT.innerHTML = `<span class="status-debug">${pesanGagal}</span>`;
       }
       t.gagal = (tEf === null && t.gagal);
-      
+
       // PANEL SALINITAS
       var panelSal = document.getElementById("status-panel");
       panelSal.style.display = "block"; panelSal.className = "panel status-panel";
-      
+
       var maxTideGagal = (data.max_tide_meter === null || data.max_tide_meter === undefined);
       var maxTideNum = maxTideGagal ? 0 : Number(data.max_tide_meter);
       var datumPasang = data.datum_pasang || null;
       var datumLangsung = (datumPasang === "LAT");
       var tideTxt = maxTideGagal ? "Tidak terdeteksi" : maxTideNum.toFixed(2) + " m (LAT" + (datumLangsung ? "" : ", est.") + ")";
       var activeD = Number(data.koefisien_dispersi_estimasi) || 100;
-      
+
       var footNote = `<span class="status-time">Timestamp Sinkronisasi: ${updateTimeStr}</span><span class="status-caveat">Koef. Dispersi (D=${activeD}) diproyeksikan murni dari dinamika pasang laut & angin pesisir.</span>`;
       if (data.fase_pasang) footNote += `<span class="status-caveat">Indikator Bulan: ${escapeHtml(data.fase_pasang)}.</span>`;
       if (ambangT < AMBANG_T_DASAR) footNote += `<span class="status-caveat">*Reduksi threshold t ke ${ambangT} hr merupakan safety factor iklim.</span>`;
@@ -1273,7 +1306,7 @@
       var nTurun = salPompa.filter(function(s){ return s > 1.3; }).length;
       var ambangPasang = (typeof data.ambang_pasang_darurat_m === "number") ? data.ambang_pasang_darurat_m : 2.27;
       var aturanDarurat = (!maxTideGagal && maxTideNum >= ambangPasang && state.t >= ambangT);
-      
+
       var ringkas = "Deteksi Sistem: <b>" + nGagal + " dari " + KM_POMPA.length + "</b> simpul ekstraksi terindikasi > 5 ppt, " +
         nTurun + " simpul > 1.3 ppt (Durasi Kering Ekivalen " + state.t + " hr, Threshold " + ambangT + " hr).";
 
@@ -1298,7 +1331,7 @@
 
       onChange();
       btn.textContent = "Sinkronisasi Berhasil ✓";
-      
+
     } catch(e) { 
       console.error(e);
       btn.textContent = "Sinkronisasi Terkendala (Cek Jaringan)"; 
@@ -1319,7 +1352,7 @@
   pasangKontrolLag();      // <-- baru
   onChange();
   syncData();
-  
+
 })();
 </script>
 
@@ -1381,7 +1414,7 @@
     var SIKLUS = 29.530588 * 86400000;
     // Referensi bulan baru (New Moon): 6 Jan 2000 18:14 UTC
     var BASE_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
-    
+
     var umur = (tMs - BASE_NEW_MOON) % SIKLUS;
     if (umur < 0) umur += SIKLUS;
     var rasio = umur / SIKLUS; // 0.0 hingga 1.0
@@ -1946,11 +1979,11 @@ var chart = root.container.children.push(am5map.MapChart.new(root, {
   maxPanOut: 0,
   minZoomLevel: 0.5,
   projection: am5map.geoOrthographic(),
-  
+
   // Rotasi menghadap Indonesia (Sulawesi)
   rotationX: -120.39,
   rotationY: 4.34, 
-  
+
   background: am5.Rectangle.new(root, {
     fill: am5.color(0x101318),
     fillOpacity: 0
@@ -2149,7 +2182,7 @@ function fetchTideData() {
   ])
   .then(([dataPasut, dataSeri]) => {
     if (dataPasut.error) throw new Error(dataPasut.error);
-    
+
     var currentLevel = "N/A", trend = "";
     if (dataSeri.t && dataSeri.lt) {
       var minDiff = Infinity, closestIndex = -1;
@@ -2173,7 +2206,7 @@ function fetchTideData() {
     if(dataPasut.high_tides) dataPasut.high_tides.forEach(h => extremes.push({type: 'Pasang', time: new Date(h.time), value: h.value}));
     if(dataPasut.low_tides) dataPasut.low_tides.forEach(l => extremes.push({type: 'Surut', time: new Date(l.time), value: l.value}));
     extremes.sort((a, b) => a.time - b.time);
-    
+
     var nextExtremes = extremes.filter(e => e.time > now);
     var nextHigh = nextExtremes.find(e => e.type === 'Pasang');
     var nextLow = nextExtremes.find(e => e.type === 'Surut');
