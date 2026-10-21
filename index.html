@@ -509,6 +509,28 @@
           <p class="field-note" id="wl-note"></p>
         </div>
       </div>
+      <!-- BANNER JADWAL POMPA OTOMATIS -->
+<div class="panel">
+  <div class="panel-head"><h2>Prediksi Pasut & Jendela Pompa (Otomatis)</h2></div>
+  <div class="panel-body" style="padding: 0;">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Surut Muara (WITA, elevasi m)</th>
+            <th>Jendela Ambil Air (WITA)</th>
+            <th>Catatan</th>
+          </tr>
+        </thead>
+        <tbody id="jadwal-pompa-body">
+          <tr><td colspan="4" style="text-align:center;" class="muted">Memuat data prediksi pasut BMKG...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-caption">Jendela operasional ditarik otomatis selama 3 jam setelah titik surut. "Utama" ditentukan dari elevasi surut terdangkal pada hari tersebut.</p>
+  </div>
+</div>
       <!-- TABEL REKAP -->
       <div class="panel">
         <div class="panel-head"><h2>Tabel Status Kualitas Air per Titik Pompa (Kondisi Saat Ini)</h2></div>
@@ -2203,13 +2225,15 @@ function getUTCDateString(date) {
 
 function fetchTideData() {
   var now = new Date();
-  var tomorrow = new Date(now.getTime() + (24 * 60 * 60 * 1000));
+  // Mengubah rentang waktu penarikan data menjadi 4 hari ke depan
+  var empatHariKedepan = new Date(now.getTime() + (4 * 24 * 60 * 60 * 1000));
   var dari = getUTCDateString(now);
-  var sampai = getUTCDateString(tomorrow);
+  var sampai = getUTCDateString(empatHariKedepan);
+  
   var scriptUrl = window.URL_GAS_WALANAE;
   var urlPasut = `${scriptUrl}?aksi=pasut&dari=${dari}&sampai=${sampai}`;
   var urlSeri = `${scriptUrl}?aksi=pasut_seri&dari=${dari}&sampai=${sampai}`;
-
+  
   Promise.all([
     fetch(urlPasut).then(r => r.json()),
     fetch(urlSeri).then(r => r.json())
@@ -2251,6 +2275,68 @@ function fetchTideData() {
       title: tideLocation.title,
       tideData: `Status Air: ${currentLevel} ${trend}\n\n[bold]Prediksi Berikutnya:[/]\nPasang: ${nextHigh ? nextHigh.value.toFixed(2) + "m (" + formatWaktu(nextHigh.time) + ")" : "-"}\nSurut : ${nextLow ? nextLow.value.toFixed(2) + "m (" + formatWaktu(nextLow.time) + ")" : "-"}`
     });
+
+    // ==========================================
+    // KODE BARU UNTUK TABEL JADWAL POMPA
+    // ==========================================
+    function renderJadwalPompa(lowTides) {
+      if (!lowTides || lowTides.length === 0) return;
+
+      let jadwalPerHari = {};
+      
+      lowTides.forEach(tide => {
+        let date = new Date(tide.time);
+        let localDate = new Date(date.getTime() + (8 * 3600000));
+        let tglStr = localDate.getUTCDate() + " " + ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][localDate.getUTCMonth()];
+        
+        if (!jadwalPerHari[tglStr]) jadwalPerHari[tglStr] = [];
+        jadwalPerHari[tglStr].push({
+          waktuMs: date.getTime(),
+          waktuStr: ("0" + localDate.getUTCHours()).slice(-2) + ":" + ("0" + localDate.getUTCMinutes()).slice(-2),
+          elevasi: tide.value,
+          jamInt: localDate.getUTCHours()
+        });
+      });
+
+      let htmlRows = "";
+      
+      Object.keys(jadwalPerHari).forEach(tgl => {
+        let surutHariIni = jadwalPerHari[tgl];
+        let surutUtama = surutHariIni.reduce((min, curr) => curr.elevasi < min.elevasi ? curr : min, surutHariIni[0]);
+        
+        let stringSurut = [];
+        let stringJendela = [];
+        
+        surutHariIni.forEach(s => {
+          stringSurut.push(`${s.waktuStr} (${s.elevasi.toFixed(2).replace('.', ',')})`);
+          let endTime = new Date(s.waktuMs + (3 * 3600000) + (8 * 3600000)); 
+          let endStr = ("0" + endTime.getUTCHours()).slice(-2) + ":" + ("0" + endTime.getUTCMinutes()).slice(-2);
+          stringJendela.push(`${s.waktuStr}–${endStr}`);
+        });
+
+        let catatan = "Utama";
+        if (surutHariIni.length > 1) {
+          catatan = surutUtama.jamInt < 12 ? "Utama: pagi" : "Utama: sore";
+        }
+
+        htmlRows += `<tr>
+          <td><b>${tgl}</b></td>
+          <td>${stringSurut.join(" ; ")}</td>
+          <td>${stringJendela.join(" ; ")}</td>
+          <td>${catatan}</td>
+        </tr>`;
+      });
+
+      document.getElementById("jadwal-pompa-body").innerHTML = htmlRows;
+    }
+
+    if(dataPasut.low_tides) {
+      renderJadwalPompa(dataPasut.low_tides);
+    }
+    // ==========================================
+    // AKHIR KODE BARU
+    // ==========================================
+
   }).catch(e => {
     tideSeries.data.setIndex(0, { geometry: tideLocation.geometry, title: tideLocation.title, tideData: "Gagal memuat data API BMKG." });
   });
