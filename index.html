@@ -411,19 +411,6 @@
         </div>
       </div>
 
-      <!-- CURAH HUJAN WAJO (hasil scraping BBWS via Apps Script) -->
-      <div class="panel" id="wajo-panel">
-        <div class="panel-head"><h2>Curah Hujan Kabupaten Wajo (Telemetri BBWS)</h2></div>
-        <div class="panel-body">
-          <div class="hujan-grid">
-            <div class="hujan-box"><span>Kemarin</span><strong id="wajo-1d">–</strong></div>
-            <div class="hujan-box"><span>7 Hari</span><strong id="wajo-7d">–</strong></div>
-            <div class="hujan-box"><span>30 Hari</span><strong id="wajo-30d">–</strong></div>
-          </div>
-          <p class="field-note" id="wajo-note">Memuat data…</p>
-        </div>
-      </div>
-
       <!-- BANNER SALINITAS -->
       <div class="panel status-panel" id="status-panel">
         <div class="panel-body">
@@ -611,7 +598,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
   // SATU-SATUNYA tempat mengisi URL deployment Google Apps Script (dipakai dashboard, visualisasi pasut & globe).
-  window.URL_GAS_WALANAE = "https://script.google.com/macros/s/AKfycbz4eWBx9IXys_Y82az9CwVYLqQuCaxzk3Wcjh7ef5ZJDN8VLsygL-FNzqQJ0KYUd_wu/exec";
+  window.URL_GAS_WALANAE = "https://script.google.com/macros/s/AKfycbxai-8ZXkGw16l_AEXKbydeahMoIGMiRojzIwID-DPrMS4nlma0UmEYemAEJIHmWqFV/exec";
 </script>
 
 <!-- ===================== DASHBOARD SALINITAS ===================== -->
@@ -2431,47 +2418,5 @@ setInterval(function() {
 chart.appear(1000, 100);
 }); 
 </script>
-<!-- ===================== CURAH HUJAN WAJO ===================== -->
-<script>
-(async function(){
-  "use strict";
-  var note = document.getElementById("wajo-note");
-  var DAY = 86400000;
-  try {
-    var res = await fetch(window.URL_GAS_WALANAE + "?aksi=wajo");
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    var j = await res.json();
-    if (j.error) throw new Error(j.error);
-    var d = j.data || [];
-    if (!d.length) throw new Error("data kosong");
-
-    var tAkhir = Date.parse(d[d.length - 1].tanggal + "T00:00:00Z");
-
-    function jumlah(hari){
-      var batas = tAkhir - (hari - 1) * DAY, n = 0, s = 0;
-      d.forEach(function(r){
-        var t = Date.parse(r.tanggal + "T00:00:00Z");
-        if (t >= batas && typeof r.rata2_mm === "number"){ s += r.rata2_mm; n++; }
-      });
-      return { s: s, n: n };
-    }
-
-    var a = jumlah(1), b = jumlah(7), c = jumlah(30);
-    document.getElementById("wajo-1d").textContent  = a.s.toFixed(1) + " mm";
-    document.getElementById("wajo-7d").textContent  = b.s.toFixed(1) + " mm";
-    document.getElementById("wajo-30d").textContent = c.s.toFixed(1) + " mm";
-
-    var pos = d[d.length - 1].pos_aktif;
-    note.textContent = "Rata-rata seluruh pos aktif di Wajo" + (pos ? " (" + pos + " pos)" : "") +
-      ". Data terakhir: " + d[d.length - 1].tanggal +
-      " · tersedia " + b.n + "/7 hari dan " + c.n + "/30 hari. Sumber: telemetri-bbws-pomjen.com";
-  } catch (e) {
-    console.error(e);
-    document.getElementById("wajo-1d").className = "text-gagal";
-    note.textContent = "Data Wajo belum tersedia (" + e.message + ").";
-  }
-})();
-</script>
-
 </body>
 </html>
